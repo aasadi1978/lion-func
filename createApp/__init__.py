@@ -34,6 +34,9 @@ def validate_az_group(rg: str, location: str = 'westeurope', maxtries=5) -> bool
                         text=True
                     )
 
+            logging.debug(f"CLI stdout: {check_group.stdout}")
+            logging.error(f"CLI stderr: {check_group.stderr}")
+
             if check_group.stdout.strip().lower() == 'true':
                 return True
 
@@ -82,6 +85,9 @@ def create_app(req: func.HttpRequest) -> func.HttpResponse:
             text=True
         )
 
+        logging.debug(f"CLI stdout: {check_app.stdout}")
+        logging.error(f"CLI stderr: {check_app.stderr}")
+
         if check_app.returncode == 0:
             return func.HttpResponse(f"App '{app_name}' already exist.", status_code=409)
         
@@ -117,7 +123,10 @@ def create_app(req: func.HttpRequest) -> func.HttpResponse:
         ]
 
         for cmd in cmds:
-            subprocess.run(cmd, shell=True, check=True)
+            create_status = subprocess.run(cmd, shell=True, check=True)
+
+            logging.debug(f"CLI stdout: {create_status.stdout}")
+            logging.error(f"CLI stderr: {create_status.stderr}")
 
         return func.HttpResponse(f"Container App '{app_name}' deployed with image '{image}'.", status_code=201)
 
