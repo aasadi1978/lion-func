@@ -94,13 +94,9 @@ jobs:
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
 
-      - name: Assigning Role
-        run: |
-          az role assignment create --assignee $CLIENT_ID  --role "Contributor" --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$AZURE_RESOURCE_GROUP
-
       - name: Configure Azure Function App Settings
         run: |
-          az functionapp config appsettings set \gi
+          az functionapp config appsettings set \
             --name "$APP_NAME" \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --settings \
