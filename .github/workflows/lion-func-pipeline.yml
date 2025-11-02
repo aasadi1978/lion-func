@@ -59,12 +59,14 @@ jobs:
       AZURE_SQL_PASS: ${{ secrets.AZURE_SQL_PASS }}
       AZURE_SQL_SERVER: ${{ secrets.AZURE_SQL_SERVER }}
       AZURE_SQL_DB: ${{ secrets.AZURE_SQL_DB }}
-      WEBSITES_ENABLE_APP_SERVICE_STORAGE: ${{ secrets.WEBSITES_ENABLE_APP_SERVICE_STORAGE }}
       DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
       AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
       APP_NAME: ${{ vars.APP_NAME }}
-      APP_ENV: ${{ vars.APP_ENVS }}
-      AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
+      APP_ENV: ${{ vars.APP_ENV }}
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      CLIENT_ID: ${{ secrets.AZUREAPPSERVICE_CLIENTID_0894018C4A4340C78F98C962ED146E31 }}
+      SUBSCRIPTION_ID: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_CB83561F93F6495F960B9E37C7E0C78F }}
+      TENANT_ID: ${{ secrets.AZUREAPPSERVICE_TENANTID_FD37325ECB6B404DB0EDF1826E9D4829 }}
 
     steps:
       - name: Download artifact from build job
@@ -80,9 +82,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_0894018C4A4340C78F98C962ED146E31 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_FD37325ECB6B404DB0EDF1826E9D4829 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_CB83561F93F6495F960B9E37C7E0C78F }}
+          client-id: ${{ env.CLIENT_ID }}
+          tenant-id: ${{ env.TENANT_ID}}
+          subscription-id: ${{ env.SUBSCRIPTION_ID }}
 
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
@@ -92,19 +94,23 @@ jobs:
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
 
-      # - name: Configure Azure Function App Settings
-      #   run: |
-      #     az functionapp config appsettings set \
-      #       --name "$APP_NAME" \
-      #       --resource-group "$AZURE_RESOURCE_GROUP" \
-      #       --settings \
-      #         AZURE_SQL_USER="$AZURE_SQL_USER" \
-      #         AZURE_SQL_PASS="$AZURE_SQL_PASS" \
-      #         AZURE_SQL_SERVER="$AZURE_SQL_SERVER" \
-      #         AZURE_SQL_DB="$AZURE_SQL_DB" \
-      #         AZURE_RESOURCE_GROUP="$AZURE_RESOURCE_GROUP" \
-      #         AZURE_STORAGE_CONNECTION_STRING="$AZURE_STORAGE_CONNECTION_STRING" \
-      #         APP_NAME="$APP_NAME" \
-      #         APP_ENV="$APP_ENV" \
-      #         "DOCKER_IMAGE=$DOCKER_IMAGE"
+      - name: Assigning Role
+        run: |
+          az role assignment create --assignee $CLIENT_ID  --role "Contributor" --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$AZURE_RESOURCE_GROUP
+
+      - name: Configure Azure Function App Settings
+        run: |
+          az functionapp config appsettings set \gi
+            --name "$APP_NAME" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --settings \
+              AZURE_SQL_USER="$AZURE_SQL_USER" \
+              AZURE_SQL_PASS="$AZURE_SQL_PASS" \
+              AZURE_SQL_SERVER="$AZURE_SQL_SERVER" \
+              AZURE_SQL_DB="$AZURE_SQL_DB" \
+              AZURE_RESOURCE_GROUP="$AZURE_RESOURCE_GROUP" \
+              AZURE_STORAGE_CONNECTION_STRING="$AZURE_STORAGE_CONNECTION_STRING" \
+              APP_NAME="$APP_NAME" \
+              APP_ENV="$APP_ENV" \
+              "DOCKER_IMAGE=$DOCKER_IMAGE"
 
