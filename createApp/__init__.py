@@ -55,14 +55,21 @@ def create_app(req: func.HttpRequest) -> func.HttpResponse:
 
     logging.info('Processing request to deploy container app.')
 
-    # Read parameters from request
-    image = getenv('DOCKER_IMAGE')
-    app_env = getenv('APP_ENV')
-    app_name = getenv('APP_NAME')
-    rg = getenv('AZURE_RESOURCE_GROUP')
-    location = getenv('LOCATION')
-    port = int(getenv("PORT", 80))
-    task_type = req.params.get('TASK_TYPE')
+    image = req.params.get('image')
+    app_env = req.params.get('app_env')
+    rg = req.params.get('rg')
+    location = req.params.get('location')
+    port = req.params.get('port')
+    app_name = req.params.get('app_name')
+    task_type = req.params.get('task_type')
+
+    image = image or getenv('DOCKER_IMAGE')
+    app_env = app_env or getenv('APP_ENV')
+    app_name = app_name or getenv("APP_NAME")
+    rg = rg or getenv('AZURE_RESOURCE_GROUP')
+    location = location or getenv('LOCATION')
+    port = port or int(getenv("PORT", 80))
+
 
     if not app_env.lower().endswith('-env'):
         app_env = f"{app_env}-env"
