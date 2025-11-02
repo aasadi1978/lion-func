@@ -1,6 +1,6 @@
 azure-functions
 requests
 dotenv
+azure-identity
 azure-mgmt-resource
 azure-mgmt-appcontainers
-azure-identity
