@@ -2,8 +2,6 @@
 source ./secrets.sh
 echo "Spinning off a new container..."
 
-echo $FUNC_KEY
-
 RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}\n" -X POST "https://lion-func-bqhycbhdfna4fder.westeurope-01.azurewebsites.net/api/createApp?app_name=lion-task-1234&task_type=optimize&code=$FUNC_KEY")
 
 # Extract HTTP status
