@@ -1,0 +1,40 @@
+from datetime import datetime
+import json
+import logging
+import subprocess
+import azure.functions as func
+
+
+def start_app(app_name: str, resource_group: str) -> func.HttpResponse:
+    try:
+        check_app = subprocess.run(
+            f"az containerapp show --name {app_name} --resource-group {resource_group}",
+            shell=True,
+            capture_output=True,
+            text=True
+        )
+
+        if check_app.returncode != 0:
+            return func.HttpResponse(f"App '{app_name}' does not exist.", status_code=404)
+
+        app_info = json.loads(check_app.stdout)
+        state = app_info.get("properties", {}).get("provisioningState", "")
+
+        if state.lower() == "stopped":
+            start_result = subprocess.run(
+                f"az containerapp start --name {app_name} --resource-group {resource_group}",
+                shell=True,
+                capture_output=True,
+                text=True
+            )
+
+            if start_result.returncode == 0:
+                logging.info(f"{app_name} started on {datetime.now()}")
+                return func.HttpResponse(f"App '{app_name}' started successfully.", status_code=200)
+            else:
+                return func.HttpResponse(f"Failed to start app: {start_result.stderr}", status_code=500)
+        else:
+            return func.HttpResponse(f"App '{app_name}' is already running or provisioning.", status_code=200)
+
+    except Exception as e:
+        return func.HttpResponse(f"Error while starting app '{app_name}': {str(e)}", status_code=500)

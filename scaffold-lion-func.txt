@@ -1,0 +1,26 @@
+lion-func/
+├── __init__.py
+├── bash
+│   ├── build_container_app.sh
+│   ├── configure_CICD_VM.sh
+│   ├── configure_app_settings.sh
+│   ├── configure_container.sh
+│   └── secret_variables.sh
+├── createApp
+│   ├── __init__.py
+│   ├── function.json
+│   └── spawn_task.py
+├── host.json
+├── local.settings.json
+├── orchestration.md
+├── requirements.txt
+├── scaffold-lion-deploy.txt
+├── startApp
+│   ├── __init__.py
+│   └── function.json
+├── stopApp
+│   ├── __init__.py
+│   └── function.json
+└── utils
+    ├── __init__.py
+    └── get_sql_env.py
