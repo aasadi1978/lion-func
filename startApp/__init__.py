@@ -1,11 +1,12 @@
 from datetime import datetime
 import json
 import logging
+from os import getenv
 import subprocess
 import azure.functions as func
 
 
-def start_app(app_name: str, resource_group: str) -> func.HttpResponse:
+def start_app(app_name: str, resource_group: str = getenv('AZURE_RESOURCE_GROUP')) -> func.HttpResponse:
     try:
         check_app = subprocess.run(
             f"az containerapp show --name {app_name} --resource-group {resource_group}",

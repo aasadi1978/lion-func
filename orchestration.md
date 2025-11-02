@@ -63,7 +63,7 @@ import uuid
 from os import getenv
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    base_image = req.params.get("image") or getenv("DEFAULT_IMAGE")
+    base_image = req.params.get("image") or getenv("DOCKER_IMAGE")
     rg = req.params.get("resourceGroup", "rg-lion-app")
     app_env = req.params.get("appEnv", "lion-env")
     location = req.params.get("location", "westeurope")

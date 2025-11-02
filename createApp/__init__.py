@@ -6,7 +6,20 @@ import logging
 from os import getenv
 import subprocess
 import azure.functions as func
-from utils.get_sql_env import get_sql_env_vars
+
+def get_app_settings():
+    return {
+        "AZURE_SQL_USER": getenv("AZURE_SQL_USER", "lion2025"),
+        "AZURE_SQL_PASS": getenv("AZURE_SQL_PASS"),
+        "AZURE_SQL_SERVER": getenv("AZURE_SQL_SERVER"),
+        "AZURE_SQL_DB": getenv("AZURE_SQL_DB"),
+        "AZURE_STORAGE_CONNECTION_STRING": getenv("AZURE_STORAGE_CONNECTION_STRING"),
+        "DOCKER_IMAGE" : getenv("DOCKER_IMAGE"),
+        "APP_NAME" : getenv("APP_NAME"),
+        "APP_ENV" : getenv("APP_ENV"),
+        "AZURE_RESOURCE_GROUP" : getenv("AZURE_RESOURCE_GROUP"),
+        "LOCATION": getenv("LOCATION")
+    }
 
 
 def validate_az_group(rg: str, location: str = 'westeurope', maxtries=5) -> bool:
@@ -35,15 +48,21 @@ def validate_az_group(rg: str, location: str = 'westeurope', maxtries=5) -> bool
 
 def create_app(req: func.HttpRequest) -> func.HttpResponse:
 
+    """
+    This is function to re-create a new isntance of an existing container app to be used for parallel computing 
+    or background task
+    """
+
     logging.info('Processing request to deploy container app.')
 
     # Read parameters from request
-    image = req.params.get('image')
-    app_env = req.params.get('appEnv')
-    app_name = req.params.get('appName')
-    rg = req.params.get('resourceGroup', 'rg-lion-app')
-    location = req.params.get('location', 'westeurope')
-    rg = rg or getenv('ResourceGroup')
+    image = getenv('DOCKER_IMAGE')
+    app_env = getenv('APP_ENV')
+    app_name = getenv('APP_NAME')
+    rg = getenv('AZURE_RESOURCE_GROUP')
+    location = getenv('LOCATION')
+    port = int(getenv("PORT", 80))
+    task_type = req.params.get('TASK_TYPE')
 
     if not app_env.lower().endswith('-env'):
         app_env = f"{app_env}-env"
@@ -69,12 +88,9 @@ def create_app(req: func.HttpRequest) -> func.HttpResponse:
             status_code=400
         )
 
-    port = int(getenv("PORT", 80))
-    sql_env = get_sql_env_vars()
+    sql_env = get_app_settings()
     env_vars = ' '.join([f"{k}={v}" for k, v in sql_env.items()])
 
-    #  check if it's a task container
-    task_type = req.params.get('task')
     if task_type:
         env_vars += f" TASK_TYPE={task_type}"
 

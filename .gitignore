@@ -16,7 +16,7 @@ src/lion/static/cache
 src/lion/static/uploads
 *.bat
 
-
+git-secrets.sh
 */__archive__/*
 */images/*
 __*/

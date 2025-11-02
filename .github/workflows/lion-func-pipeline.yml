@@ -3,7 +3,6 @@
 # More info on Python, GitHub Actions, and Azure Functions: https://aka.ms/python-webapps-actions
 
 name: Build and deploy Python project to Azure Function App - lion-func
-
 on:
   push:
     branches:
@@ -37,8 +36,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # Optional: Add step to run tests here
-
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
 
@@ -56,6 +53,18 @@ jobs:
     permissions:
       id-token: write #This is required for requesting the JWT
       contents: read #This is required for actions/checkout
+
+    env:
+      AZURE_SQL_USER: ${{ secrets.AZURE_SQL_USER }}
+      AZURE_SQL_PASS: ${{ secrets.AZURE_SQL_PASS }}
+      AZURE_SQL_SERVER: ${{ secrets.AZURE_SQL_SERVER }}
+      AZURE_SQL_DB: ${{ secrets.AZURE_SQL_DB }}
+      WEBSITES_ENABLE_APP_SERVICE_STORAGE: ${{ secrets.WEBSITES_ENABLE_APP_SERVICE_STORAGE }}
+      DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
+      AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+      APP_NAME: ${{ vars.APP_NAME }}
+      APP_ENV: ${{ vars.APP_ENVS }}
+      AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
 
     steps:
       - name: Download artifact from build job
@@ -75,11 +84,27 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_FD37325ECB6B404DB0EDF1826E9D4829 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_CB83561F93F6495F960B9E37C7E0C78F }}
 
+      - name: Configure Azure Function App Settings
+        run: |
+          az functionapp config appsettings set \
+            --name "$APP_NAME" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --settings \
+              AZURE_SQL_USER="$AZURE_SQL_USER" \
+              AZURE_SQL_PASS="$AZURE_SQL_PASS" \
+              AZURE_SQL_SERVER="$AZURE_SQL_SERVER" \
+              AZURE_SQL_DB="$AZURE_SQL_DB" \
+              AZURE_RESOURCE_GROUP="$AZURE_RESOURCE_GROUP" \
+              AZURE_STORAGE_CONNECTION_STRING="$AZURE_STORAGE_CONNECTION_STRING" \
+              APP_NAME="$APP_NAME" \
+              APP_ENV="$APP_ENV" \
+              "DOCKER_IMAGE=$DOCKER_IMAGE"
+
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
         id: deploy-to-function
         with:
-          app-name: 'lion-func'
+          app-name: ${{ env.APP_NAME }}
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           
