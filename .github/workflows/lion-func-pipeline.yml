@@ -84,6 +84,14 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_FD37325ECB6B404DB0EDF1826E9D4829 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_CB83561F93F6495F960B9E37C7E0C78F }}
 
+      - name: 'Deploy to Azure Functions'
+        uses: Azure/functions-action@v1
+        id: deploy-to-function
+        with:
+          app-name: ${{ env.APP_NAME }}
+          slot-name: 'Production'
+          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+
       - name: Configure Azure Function App Settings
         run: |
           az functionapp config appsettings set \
@@ -100,11 +108,3 @@ jobs:
               APP_ENV="$APP_ENV" \
               "DOCKER_IMAGE=$DOCKER_IMAGE"
 
-      - name: 'Deploy to Azure Functions'
-        uses: Azure/functions-action@v1
-        id: deploy-to-function
-        with:
-          app-name: ${{ env.APP_NAME }}
-          slot-name: 'Production'
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          
