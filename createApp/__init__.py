@@ -22,7 +22,7 @@ def get_app_settings():
     }
 
 
-def validate_az_group(rg: str, location: str = 'westeurope', maxtries=5) -> bool:
+def validate_az_group(rg: str=getenv("AZURE_RESOURCE_GROUP", "rg-lion-app"), location: str = 'westeurope', maxtries=5) -> bool:
     try:
         itr=1
         while itr < maxtries:
