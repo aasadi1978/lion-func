@@ -26,7 +26,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     subscription_id = getenv("AZURE_SUBSCRIPTION_ID")
     rg = getenv("AZURE_RESOURCE_GROUP")
     location = getenv("LOCATION", "westeurope")
-    app_env = getenv("APP_ENV")
+    # app_env = getenv("APP_ENV")
     image = getenv("DOCKER_IMAGE")
     port = int(getenv("PORT", "80"))
 
@@ -49,7 +49,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         # Create Container App
         container_client = ContainerAppsAPIClient(credential, subscription_id)
 
-        env_id = f"/subscriptions/{subscription_id}/resourceGroups/{rg}/providers/Microsoft.App/managedEnvironments/{app_env}"
+        # env_id = None
+        # if app_env:
+        #     env_id = f"/subscriptions/{subscription_id}/resourceGroups/{rg}/providers/Microsoft.App/managedEnvironments/{app_env}"
 
         container_def = Container(name=app_name, image=image, env=[EnvironmentVar(name=k, value=v) for k, v in env_vars.items() if v])
 
@@ -62,8 +64,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                 containers=[Container(name=app_name, image=image, env=[
                     EnvironmentVar(name=k, value=v) for k, v in env_vars.items() if v
                 ])]
-            ),
-            environment_id=env_id
+            )
+            # environment_id=env_id
         )
 
         container_client.container_apps.begin_create_or_update(rg, app_name, container_app).result()
