@@ -3,7 +3,11 @@
 source ./secrets.sh
 echo "Spinning off a new container..."
 
-RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}\n" -X POST "$FUNC_KEY&app_name=lion-task-1234&task_type=optimize")
+
+
+# RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}\n" -X POST "$FUNC_KEY&app_name=lion-task-1234&task_type=optimize")
+RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}\n" -X POST "$STOP_KEY&app_name=lion-task-1234")
+
 
 # Extract HTTP status
 HTTP_STATUS=$(echo "$RESPONSE" | grep HTTP_STATUS | cut -d':' -f2)

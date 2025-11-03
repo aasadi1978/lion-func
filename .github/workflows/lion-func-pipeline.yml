@@ -2,7 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure Functions: https://aka.ms/python-webapps-actions
 # If env does not exist run the follwoing on Azure Cloud Shell: https://portal.azure.com/#cloudshell/
-# az containerapp env create --name lion-containerapp-env --resource-group rg-lion-app --location westeurope
+# az containerapp env create --name lion-env --resource-group rg-lion-app --location westeurope
 
 name: Build and deploy Python project to Azure Function App - lion-orchestrator
 on:

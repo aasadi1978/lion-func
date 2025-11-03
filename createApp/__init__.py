@@ -19,6 +19,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     # Get parameters or fallbacks
     app_name = req.params.get('app_name')
     task_type = req.params.get('task_type')
+    port = req.params.get('port')
 
     if not app_name:
         return func.HttpResponse("Missing required parameter: app_name", status_code=400)
@@ -28,7 +29,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     location = getenv("LOCATION", "westeurope")
     app_env = getenv("APP_ENV")
     image = getenv("DOCKER_IMAGE")
-    port = int(getenv("PORT", "80"))
+    port = port or getenv("PORT", "8000")
 
     env_vars = {
         "AZURE_SQL_USER": getenv("AZURE_SQL_USER"),
@@ -58,7 +59,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         container_app = ContainerApp(
             location=location,
             configuration=Configuration(
-                ingress=Ingress(external=True, target_port=port)
+                ingress=Ingress(external=True, target_port=int(port))
             ),
             template=Template(
                 containers=[Container(name=app_name, image=image, env=[

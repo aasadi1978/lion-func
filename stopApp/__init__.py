@@ -22,7 +22,7 @@ def stop_app(app_name: str, resource_group: str = getenv("AZURE_RESOURCE_GROUP",
             logging.info(f"{app_name} stopped on {datetime.now()}")
             return func.HttpResponse(f"App '{app_name}' stopped successfully.", status_code=200)
         else:
-            return func.HttpResponse(f"App '{app_name}' is already stopped or provisioning.", status_code=200)
+            return func.HttpResponse(f"App '{app_name}' is already stopped or provisioning: {state}", status_code=200)
 
     except Exception as e:
         logging.error(f"Error while stopping app '{app_name}': {str(e)}")
