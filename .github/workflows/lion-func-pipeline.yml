@@ -1,6 +1,8 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure Functions: https://aka.ms/python-webapps-actions
+# If env does not exist run the follwoing on Azure Cloud Shell: https://portal.azure.com/#cloudshell/
+# az containerapp env create --name lion-containerapp-env --resource-group rg-lion-app --location westeurope
 
 name: Build and deploy Python project to Azure Function App - lion-orchestrator
 on:
@@ -57,6 +59,7 @@ jobs:
       DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
       AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
       APP_NAME: ${{ vars.APP_NAME }}
+      APP_ENV: ${{ vars.APP_ENV }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
       CLIENT_ID: ${{ secrets.AZUREAPPSERVICE_CLIENTID_327141F8816D460997B41D94CEC1131C }}
@@ -104,5 +107,6 @@ jobs:
               AZURE_STORAGE_CONNECTION_STRING="$AZURE_STORAGE_CONNECTION_STRING" \
               APP_NAME="$APP_NAME" \
               DOCKER_IMAGE="$DOCKER_IMAGE" \
-              AZURE_SUBSCRIPTION_ID="$AZURE_SUBSCRIPTION_ID"
+              AZURE_SUBSCRIPTION_ID="$AZURE_SUBSCRIPTION_ID" \
+              APP_ENV="$APP_ENV"
 
