@@ -35,7 +35,6 @@ jobs:
 
       - name: Zip function app for deployment
         run: |
-          cd lion-func
           zip -r ../release.zip .
 
       - name: Upload artifact for deployment job
