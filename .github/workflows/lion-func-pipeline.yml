@@ -30,6 +30,10 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Remove existing virtual environment (if any)
+        run: |
+          if [ -d "$PYTHON_ENV" ]; then rm -rf "$PYTHON_ENV"; fi
+
       - name: Create and start virtual environment
         run: |
           python -m venv $PYTHON_ENV
@@ -41,13 +45,15 @@ jobs:
 
       - name: Install dependencies
         run: |
+          Get-Location
           $PY_EXE -m pip install --upgrade pip
-          $PY_EXE pip install -r requirements.txt
+          $PY_EXE -m pip install -r requirements.txt
+          
       - name: Validate azure-identity
         run: |
           pip show azure-identity
           echo -----------------------
-          $PY_EXE pip install azure-identity
+          pip install azure-identity
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
