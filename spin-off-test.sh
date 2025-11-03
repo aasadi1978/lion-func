@@ -1,4 +1,5 @@
 #!/bin/bash
+# Testing
 source ./secrets.sh
 echo "Spinning off a new container..."
 
