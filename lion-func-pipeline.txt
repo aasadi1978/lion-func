@@ -30,13 +30,32 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      # - name: Remove existing virtual environment (if any)
+      #   run: |
+      #     if [ -d "$PYTHON_ENV" ]; then rm -rf "$PYTHON_ENV"; fi
+
+      # - name: Create and start virtual environment
+      #   run: |
+      #     python -m venv $PYTHON_ENV
+      #     source $PYTHON_ENV/bin/activate
+
+      # - name: Activate venv
+      #   run: |
+      #     source $PYTHON_ENV/bin/activate
+
+      # - name: Install dependencies
+      #   run: |
+      #     $PY_EXE -m pip install --upgrade pip
+      #     $PY_EXE -m pip install -r requirements.txt
+
+      # - name: Validate azure-identity
+      #   run: |
+      #     $PY_EXE -m pip show azure-identity
+      #     echo -----------------------
+      #     $PY_EXE -m pip install azure-identity
+
       - name: Install dependencies to .python_packages
         run: pip install -r requirements.txt -t .python_packages/lib/site-packages/
-
-      - name: Zip function app for deployment
-        run: |
-          cd lion-func
-          zip -r ../release.zip .
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
