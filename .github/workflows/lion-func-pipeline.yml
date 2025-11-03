@@ -50,9 +50,9 @@ jobs:
 
       - name: Validate azure-identity
         run: |
-          pip show azure-identity
+          $PY_EXE -m pip show azure-identity
           echo -----------------------
-          pip install azure-identity
+          $PY_EXE -m pip install azure-identity
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
