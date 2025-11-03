@@ -14,15 +14,16 @@ def stop_app(app_name: str, resource_group: str = getenv("AZURE_RESOURCE_GROUP",
 
         app = client.container_apps.get(resource_group, app_name)
         state = app.provisioning_state.lower()
+        _running_status = app.running_status.lower()
 
-        if state == "running":
+        if state == "running" or _running_status == 'running':
             poller = client.container_apps.begin_stop(resource_group, app_name)
             poller.result()  # Wait for completion
 
             logging.info(f"{app_name} stopped on {datetime.now()}")
             return func.HttpResponse(f"App '{app_name}' stopped successfully.", status_code=200)
         else:
-            return func.HttpResponse(f"App '{app_name}' is already stopped or provisioning: {state}", status_code=200)
+            return func.HttpResponse(f"App '{app_name}' is already stopped or provisioning: {state}/{_running_status}", status_code=200)
 
     except Exception as e:
         logging.error(f"Error while stopping app '{app_name}': {str(e)}")
